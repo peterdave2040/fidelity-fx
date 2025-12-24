@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Fidelity FX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root { 
+            --neon-y: #eaff00; 
+            --bg: #030508; 
+            --card: #0d1117; 
+            --green: #00ff88; 
+            --red: #ff4e50;
+            --blue: #004cff;
+        }
+        
+        body { 
+            background: var(--bg); 
+            color: #fff; 
+            font-family: 'Rajdhani', sans-serif; 
+            overflow-x: hidden;
+            padding-bottom: 100px;
+        }
+        
+        /* Header */
+        header { 
+            padding: 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 2px solid #222; 
+            background:#000; 
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .logo { 
+            font-family: 'Orbitron'; 
+            color: var(--neon-y); 
+            font-weight: 900; 
+            font-size: 24px;
+            text-shadow: 0 0 10px var(--neon-y);
+        }
+        
+        .header-right { 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+        }
+        
+        .pfp-nav { 
+            width: 50px; 
+            height: 50px; 
+            border-radius: 50%; 
+            border: 2px solid var(--neon-y); 
+            object-fit: cover;
+            cursor: pointer;
+        }
+        
+        .logout-btn { 
+            color: var(--red); 
+            font-size: 12px; 
+            font-family: 'Orbitron'; 
+            border: 2px solid var(--red); 
+            padding: 8px 16px; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            background:transparent;
+            cursor: pointer;
+        }
+        
+        /* Crypto Ticker */
+        .ticker-wrap { 
+            background: #000; 
+            padding: 12px 0; 
+            border-bottom: 1px solid #333; 
+            overflow: hidden; 
+            white-space: nowrap; 
+            font-family: 'Orbitron'; 
+            font-size: 13px; 
+            color: #848e9c; 
+        }
+        
+        .ticker { 
+            display: inline-block; 
+            animation: scroll 30s linear infinite; 
+        }
+        
+        @keyframes scroll { 
+            from { transform: translateX(100%); } 
+            to { transform: translateX(-100%); } 
+        }
+        
+        /* User Info */
+        .user-bar {
+            background: linear-gradient(135deg, rgba(0,76,255,0.1), rgba(234,255,0,0.1));
+            padding: 20px;
+            margin: 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(234,255,0,0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .user-info { text-align: center; }
+        .user-info small { 
+            display: block; 
+            color: var(--neon-y); 
+            font-family: 'Orbitron'; 
+            font-size: 10px; 
+            margin-bottom: 5px;
+        }
+        .user-info b { font-size: 16px; }
+        
+        /* Balance Card */
+        .wallet-card { 
+            margin: 20px; 
+            padding: 40px; 
+            border-radius: 30px; 
+            background: linear-gradient(135deg, #161b22, #0d1117); 
+            border: 2px solid rgba(0,255,136,0.3);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .wallet-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0,255,136,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.1); opacity: 0.6; }
+        }
+        
+        .wallet-content { position: relative; z-index: 2; }
+        
+        .main-bal { 
+            font-size: 56px; 
+            font-family: 'Orbitron'; 
+            font-weight: 900;
+            text-shadow: 0 0 20px var(--green);
+            margin: 15px 0;
+        }
+        
+        .balance-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            gap: 10px;
+        }
+        
+        .balance-item {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            border: 1px solid #222;
+        }
+        
+        .balance-item small {
+            display: block;
+            color: #848e9c;
+            font-size: 11px;
+            margin-bottom: 8px;
+            font-family: 'Orbitron';
+        }
+        
+        .balance-item b {
+            font-size: 20px;
+            display: block;
+        }
+        
+        /* Chart Section */
+        .chart-section {
+            margin: 20px;
+            background: var(--card);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid #333;
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .chart-title {
+            font-family: 'Orbitron';
+            font-size: 14px;
+            color: var(--neon-y);
+        }
+        
+        .chart-tabs {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chart-tab {
+            background: #000;
+            border: 1px solid #333;
+            color: #848e9c;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-family: 'Orbitron';
+            font-size: 10px;
+            cursor: pointer;
+        }
+        
+        .chart-tab.active {
+            border-color: var(--neon-y);
+            color: var(--neon-y);
+        }
+        
+        /* Quick Actions */
+        .action-grid { 
+            margin: 20px; 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 15px;
+        }
+        
+        .action-card { 
+            background: var(--card);
+            padding: 25px 15px;
+            text-align: center; 
+            border-radius: 20px;
+            border: 1px solid #222;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .action-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--neon-y), var(--green));
+            transform: scaleX(0);
+            transition: 0.3s;
+        }
+        
+        .action-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .action-card:hover {
+            border-color: var(--neon-y);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(234,255,0,0.2);
+        }
+        
+        .action-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        
+        .action-card small {
+            display: block;
+            font-family: 'Orbitron';
+            font-size: 11px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px;
+        }
+        
+        .stat-card {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid #222;
+            transition: 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--neon-y);
+            box-shadow: 0 5px 20px rgba(234,255,0,0.2);
+        }
+        
+        .stat-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: #848e9c;
+            font-family: 'Orbitron';
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            font-family: 'Orbitron';
+        }
+        
+        /* Market Trends */
+        .market-section {
+            margin: 20px;
+            background: var(--card);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid #333;
+        }
+        
+        .coin-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .coin-card {
+            background: #000;
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid #222;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .coin-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .coin-icon {
+            font-size: 24px;
+        }
+        
+        .coin-name {
+            font-family: 'Orbitron';
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .coin-price {
+            font-size: 12px;
+            color: #848e9c;
+        }
+        
+        .coin-change {
+            font-family: 'Orbitron';
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        /* Activity History */
+        .busy-box { 
+            margin: 20px; 
+            background: var(--card); 
+            border-radius: 20px; 
+            padding: 25px; 
+            border: 1px solid #333;
+        }
+        
+        .label-neon { 
+            font-family: 'Orbitron'; 
+            font-size: 12px; 
+            color: var(--neon-y); 
+            margin-bottom: 15px; 
+            display: block; 
+            border-bottom: 1px solid #222; 
+            padding-bottom: 8px;
+        }
+        
+        .activity-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #222;
+            align-items: center;
+        }
+        
+        .activity-item:last-child {
+            border: none;
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(234,255,0,0.1);
+            border: 1px solid rgba(234,255,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        
+        .activity-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        /* Bottom Nav */
+        .bottom-nav { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            width: 100%; 
+            background: rgba(13,17,23,0.98);
+            backdrop-filter: blur(15px);
+            display: flex; 
+            justify-content: space-around; 
+            padding: 20px 0; 
+            border-top: 2px solid #222;
+            z-index: 1000;
+        }
+        
+        .nav-item {
+            color: #848e9c;
+            text-decoration: none;
+            font-size: 26px;
+            transition: 0.3s;
+        }
+        
+        .nav-item.active {
+            color: var(--neon-y);
+            transform: scale(1.1);
+        }
+        
+        @media (max-width: 768px) {
+            .main-bal { font-size: 42px; }
+            .balance-row { flex-direction: column; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .coin-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">FIDELITY PRO</div>
+        <div class="header-right">
+            <button class="logout-btn" onclick="logout()">LOGOUT</button>
+            <img id="nav_pfp" class="pfp-nav" src="https://ui-avatars.com/api/?name=User&background=eaff00&color=000" onclick="location.href='settings.html'">
+        </div>
+    </header>
+
+    <!-- Scrolling Crypto Ticker -->
+    <div class="ticker-wrap">
+        <div class="ticker">
+            BTC $98,432.10 ▲ 1.2% &nbsp;&nbsp;&nbsp; ETH $3,120.45 ▼ 0.5% &nbsp;&nbsp;&nbsp; SOL $185.30 ▲ 4.8% &nbsp;&nbsp;&nbsp; XRP $0.62 ▲ 1.5% &nbsp;&nbsp;&nbsp; BNB $642.12 ▲ 2.1% &nbsp;&nbsp;&nbsp; ADA $0.58 ▼ 1.8% &nbsp;&nbsp;&nbsp; DOT $7.40 ▲ 0.9% &nbsp;&nbsp;&nbsp; MATIC $0.95 ▲ 3.2%
+        </div>
+    </div>
+
+    <div class="user-bar">
+        <div class="user-info">
+            <small>NAME</small>
+            <b id="disp_name">---</b>
+        </div>
+        <div class="user-info">
+            <small>COUNTRY</small>
+            <b id="disp_country">---</b>
+        </div>
+        <div class="user-info">
+            <small>MEMBER SINCE</small>
+            <b id="disp_joined">DEC 2024</b>
+        </div>
+    </div>
+
+    <div class="wallet-card">
+        <div class="wallet-content">
+            <small style="color:#848e9c; font-family:'Orbitron'; letter-spacing:1px;">PORTFOLIO VALUATION</small>
+            <div class="main-bal" style="color:var(--green);">$<span id="balCount">0.00</span></div>
+            
+            <div class="balance-row">
+                <div class="balance-item" style="border-color: var(--green);">
+                    <small>PROFIT</small>
+                    <b style="color:var(--green);" id="liveProfit">+$0.00</b>
+                </div>
+                <div class="balance-item" style="border-color: var(--neon-y);">
+                    <small>BONUS</small>
+                    <b style="color:var(--neon-y);">$18.00</b>
+                </div>
+                <div class="balance-item" style="border-color: var(--blue);">
+                    <small>INVESTED</small>
+                    <b style="color:var(--blue);" id="totalInvested">$0.00</b>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Portfolio Chart -->
+    <div class="chart-section">
+        <div class="chart-header">
+            <div class="chart-title">📈 PORTFOLIO GROWTH</div>
+            <div class="chart-tabs">
+                <button class="chart-tab active">7D</button>
+                <button class="chart-tab">1M</button>
+                <button class="chart-tab">3M</button>
+            </div>
+        </div>
+        <canvas id="portfolioChart" height="200"></canvas>
+    </div>
+
+    <div class="action-grid">
+        <a href="deposit.html" class="action-card">
+            <div class="action-icon">📥</div>
+            <small>DEPOSIT</small>
+        </a>
+        
+        <a href="invest.html" class="action-card">
+            <div class="action-icon">📊</div>
+            <small>INVEST</small>
+        </a>
+        
+        <a href="withdraw.html" class="action-card">
+            <div class="action-icon">📤</div>
+            <small>WITHDRAW</small>
+        </a>
+        
+        <a href="referral.html" class="action-card">
+            <div class="action-icon">👥</div>
+            <small>REFERRAL</small>
+        </a>
+        
+        <a href="settings.html" class="action-card">
+            <div class="action-icon">⚙️</div>
+            <small>SETTINGS</small>
+        </a>
+        
+        <a href="admin.html" class="action-card" style="border-color: var(--red);">
+            <div class="action-icon">🔐</div>
+            <small>ADMIN</small>
+        </a>
+    </div>
+
+    <!-- Market Overview -->
+    <div class="market-section">
+        <span class="label-neon">MARKET OVERVIEW</span>
+        <div class="coin-grid">
+            <div class="coin-card">
+                <div class="coin-info">
+                    <div class="coin-icon">₿</div>
+                    <div>
+                        <div class="coin-name">Bitcoin</div>
+                        <div class="coin-price">$98,432</div>
+                    </div>
+                </div>
+                <div class="coin-change" style="color:var(--green);">+1.2%</div>
+            </div>
+            
+            <div class="coin-card">
+                <div class="coin-info">
+                    <div class="coin-icon">Ξ</div>
+                    <div>
+                        <div class="coin-name">Ethereum</div>
+                        <div class="coin-price">$3,120</div>
+                    </div>
+                </div>
+                <div class="coin-change" style="color:var(--red);">-0.5%</div>
+            </div>
+            
+            <div class="coin-card">
+                <div class="coin-info">
+                    <div class="coin-icon">◎</div>
+                    <div>
+                        <div class="coin-name">Solana</div>
+                        <div class="coin-price">$185</div>
+                    </div>
+                </div>
+                <div class="coin-change" style="color:var(--green);">+4.8%</div>
+            </div>
+            
+            <div class="coin-card">
+                <div class="coin-info">
+                    <div class="coin-icon">✕</div>
+                    <div>
+                        <div class="coin-name">Ripple</div>
+                        <div class="coin-price">$0.62</div>
+                    </div>
+                </div>
+                <div class="coin-change" style="color:var(--green);">+1.5%</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">📈</div>
+            <span class="stat-label">ACTIVE PLANS</span>
+            <div class="stat-value" style="color:var(--green);" id="activePlans">0</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">💎</div>
+            <span class="stat-label">TOTAL DEPOSITS</span>
+            <div class="stat-value" style="color:var(--blue);" id="totalDeposits">0</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">🎯</div>
+            <span class="stat-label">ROI TODAY</span>
+            <div class="stat-value" style="color:var(--neon-y);">+0%</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">🔥</div>
+            <span class="stat-label">STREAK</span>
+            <div class="stat-value" style="color:var(--green);">7 Days</div>
+        </div>
+    </div>
+
+    <div class="busy-box">
+        <span class="label-neon">RECENT ACTIVITY</span>
+        <div id="hist_list">
+            <div style="text-align:center; padding:30px; color:#666;">
+                No transactions yet. Start by making a deposit!
+            </div>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="dashboard.html" class="nav-item active">🏠</a>
+        <a href="invest.html" class="nav-item">📊</a>
+        <a href="withdraw.html" class="nav-item">💸</a>
+        <a href="settings.html" class="nav-item">⚙️</a>
+    </nav>
+
+    <script>
+        // Initialize Chart
+        const ctx = document.getElementById('portfolioChart').getContext('2d');
+        const portfolioChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Por

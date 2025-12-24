@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Withdraw | Fidelity FX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --neon-y: #eaff00;
+            --green: #00ff88;
+            --red: #ff4e50;
+            --blue: #004cff;
+            --bg: #030508;
+            --card: #0d1117;
+        }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--bg);
+            color: #fff;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        
+        .back-btn {
+            color: var(--neon-y);
+            text-decoration: none;
+            font-family: 'Orbitron';
+            font-size: 14px;
+        }
+        
+        .title {
+            font-family: 'Orbitron';
+            font-size: 28px;
+            text-align: center;
+            color: var(--neon-y);
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #848e9c;
+            margin-bottom: 30px;
+        }
+        
+        .balance-card {
+            background: linear-gradient(135deg, rgba(0,255,136,0.2), rgba(234,255,0,0.1));
+            padding: 30px;
+            border-radius: 20px;
+            border: 2px solid var(--green);
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            box-shadow: 0 10px 40px rgba(0,255,136,0.2);
+        }
+        
+        .balance-label {
+            font-size: 14px;
+            color: #848e9c;
+            font-family: 'Orbitron';
+            margin-bottom: 10px;
+        }
+        
+        .balance-amount {
+            font-size: 48px;
+            font-family: 'Orbitron';
+            font-weight: 900;
+            color: var(--green);
+        }
+        
+        .withdraw-container {
+            background: var(--card);
+            padding: 40px;
+            border-radius: 25px;
+            border: 2px solid rgba(255,78,80,0.3);
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        
+        .form-title {
+            font-family: 'Orbitron';
+            font-size: 20px;
+            color: var(--red);
+            margin-bottom: 25px;
+            text-align: center;
+            border-bottom: 2px solid #333;
+            padding-bottom: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            font-family: 'Orbitron';
+            font-size: 12px;
+            color: var(--neon-y);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 18px;
+            background: #000;
+            border: 2px solid #333;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 18px;
+            font-family: 'Rajdhani';
+            outline: none;
+            transition: 0.3s;
+        }
+        
+        input:focus, select:focus {
+            border-color: var(--red);
+            box-shadow: 0 0 15px rgba(255,78,80,0.3);
+        }
+        
+        .min-notice {
+            background: rgba(255,78,80,0.1);
+            border: 1px solid var(--red);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        .min-notice strong {
+            color: var(--red);
+            font-family: 'Orbitron';
+            font-size: 18px;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .crypto-select {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .crypto-option {
+            background: #000;
+            border: 2px solid #333;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        .crypto-option:hover {
+            border-color: var(--neon-y);
+        }
+        
+        .crypto-option.active {
+            border-color: var(--neon-y);
+            background: rgba(234,255,0,0.1);
+        }
+        
+        .crypto-option .icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .crypto-option .name {
+            font-size: 12px;
+            font-family: 'Orbitron';
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--red), #ff6b6d);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Orbitron';
+            font-weight: bold;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+        
+        .btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 25px rgba(255,78,80,0.5);
+        }
+        
+        .btn:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1a1f2e, #0d1117);
+            padding: 50px;
+            border-radius: 25px;
+            border: 2px solid var(--neon-y);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            animation: modalSlide 0.3s ease-out;
+        }
+        
+        @keyframes modalSlide {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        .modal-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            animation: bounce 1s ease infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .modal h2 {
+            font-family: 'Orbitron';
+            font-size: 28px;
+            color: var(--neon-y);
+            margin-bottom: 15px;
+        }
+        
+        .modal p {
+            color: #848e9c;
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .support-btn {
+            background: linear-gradient(135deg, var(--neon-y), #fff);
+            color: #000;
+            padding: 18px 40px;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Orbitron';
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        
+        .support-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(234,255,0,0.5);
+        }
+        
+        .close-modal {
+            background: transparent;
+            border: 1px solid #444;
+            color: #848e9c;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-family: 'Orbitron';
+            cursor: pointer;
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 20px 30px;
+            border-radius: 12px;
+            font-family: 'Orbitron';
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 10000;
+            animation: slideIn 0.3s ease-out;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+        }
+        
+        .toast.success { background: var(--green); color: #000; }
+        .toast.error { background: var(--red); color: #fff; }
+        
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @media (max-width: 768px) {
+            .withdraw-container { padding: 25px 20px; }
+            .balance-amount { font-size: 36px; }
+            .title { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="dashboard.html" class="back-btn">← Back to Dashboard</a>
+    </div>
+    
+    <h1 class="title">💸 Request Withdrawal</h1>
+    <p class="subtitle">Withdraw your earnings securely</p>
+    
+    <div class="balance-card">
+        <div class="balance-label">AVAILABLE BALANCE</div>
+        <div class="balance-amount">$<span id="userBalance">0.00</span></div>
+    </div>
+    
+    <div class="withdraw-container">
+        <div class="form-title">🔒 WITHDRAWAL REQUEST FORM</div>
+        
+        <div class="min-notice">
+            <strong>⚠️ MINIMUM WITHDRAWAL: $500</strong>
+            <p>You must have at least $500 to request a withdrawal</p>
+        </div>
+        
+        <form id="withdrawForm">
+            <div class="form-group">
+                <label>Select Cryptocurrency *</label>
+                <div class="crypto-select">
+                    <div class="crypto-option active" onclick="selectCrypto('BTC', this)">
+                        <div class="icon">₿</div>
+                        <div class="name">Bitcoin</div>
+                    </div>
+                    <div class="crypto-option" onclick="selectCrypto('ETH', this)">
+                        <div class="icon">Ξ</div>
+                        <div class="name">Ethereum</div>
+                    </div>
+                    <div class="crypto-option" onclick="selectCrypto('USDT', this)">
+                        <div class="icon">₮</div>
+                        <div class="name">USDT</div>
+                    </div>
+                    <div class="crypto-option" onclick="selectCrypto('LTC', this)">
+                        <div class="icon">Ł</div>
+                        <div class="name">Litecoin</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Wallet Address *</label>
+                <input type="text" id="address" placeholder="Enter your wallet address" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Withdrawal Amount (USD) *</label>
+                <input type="number" id="amount" placeholder="Minimum $500" min="500" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Withdrawal PIN *</label>
+                <input type="password" id="pin" placeholder="Enter 4-digit PIN" maxlength="4" required>
+                <small style="color:#848e9c; font-size:12px; display:block; margin-top:5px;">
+                    Set your PIN in Settings if you haven't already
+                </small>
+            </div>
+            
+            <button type="submit" class="btn">🚀 REQUEST WITHDRAWAL</button>
+        </form>
+    </div>
+    
+    <!-- Contact Support Modal -->
+    <div class="modal" id="supportModal">
+        <div class="modal-content">
+            <div class="modal-icon">📞</div>
+            <h2>Contact Support Required</h2>
+            <p>To proceed with your withdrawal request, please contact our support team for verification and processing.</p>
+            <p style="margin-top:15px;"><strong>Response Time:</strong> Within 24 hours</p>
+            
+            <a href="mailto:support@fidelityfx.com" class="support-btn">
+                ✉️ CONTACT SUPPORT NOW
+            </a>
+            
+            <button class="close-modal" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+    
+    <script>
+        let selectedCrypto = 'BTC';
+        let currentUser = null;
+        
+        window.onload = function() {
+            currentUser = JSON.parse(localStorage.getItem('fidelity_current_user'));
+            
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            document.getElementById('userBalance').textContent = parseFloat(currentUser.balance || 0).toFixed(2);
+        };
+        
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease-out reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+        
+        function selectCrypto(crypto, element) {
+            selectedCrypto = crypto;
+            document.querySelectorAll('.crypto-option').forEach(opt => opt.classList.remove('active'));
+            element.classList.add('active');
+        }
+        
+        function closeModal() {
+            document.getElementById('supportModal').style.display = 'none';
+        }
+        
+        document.getElementById('withdrawForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const address = document.getElementById('address').value.trim();
+            const amount = parseFloat(document.getElementById('amount').value);
+            const pin = document.getElementById('pin').value;
+            const balance = parseFloat(currentUser.balance || 0);
+            
+            // Validation
+            if (!address) {
+                showToast('Please enter wallet address', 'error');
+                return;
+            }
+            
+            if (amount < 500) {
+                showToast('Minimum withdrawal is $500', 'error');
+                return;
+            }
+            
+            if (amount > balance) {
+                showToast('Insufficient balance', 'error');
+                return;
+            }
+            
+            if (!pin || pin.length !== 4) {
+                showToast('Please enter 4-digit PIN', 'error');
+                return;
+            }
+            
+            // Check PIN (if user has set one)
+            const savedPin = currentUser.withdrawPin || '0000';
+            if (pin !== savedPin) {
+                showToast('Incorrect PIN', 'error');
+                return;
+            }
+            
+            // Add to history
+            if (!currentUser.history) currentUser.history = [];
+            currentUser.history.unshift({
+                type: `WITHDRAWAL (${selectedCrypto})`,
+                amount: amount.toFixed(2),
+                date: new Date().toLocaleDateString(),
+                status: 'Pending Support'
+            });
+            
+            // Update user data
+            const users = JSON.parse(localStorage.getItem('fidelity_users') || '[]');
+            const userIndex = users.findIndex(u => u.id === currentUser.id);
+            if (userIndex !== -1) {
+                users[userIndex] = currentUser;
+                localStorage.setItem('fidelity_users', JSON.stringify(users));
+                localStorage.setItem('fidelity_current_user', JSON.stringify(currentUser));
+            }
+            
+            // Show support modal
+            document.getElementById('supportModal').style.display = 'flex';
+        });
+    </script>
+</body>
+</html>

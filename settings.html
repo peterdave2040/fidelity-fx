@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings | Fidelity FX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --neon-y: #eaff00;
+            --green: #00ff88;
+            --red: #ff4e50;
+            --bg: #030508;
+            --card: #0d1117;
+        }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--bg);
+            color: #fff;
+            padding: 20px;
+            padding-bottom: 120px;
+        }
+        
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        
+        .back-btn {
+            color: var(--neon-y);
+            text-decoration: none;
+            font-family: 'Orbitron';
+            font-size: 14px;
+        }
+        
+        .title {
+            font-family: 'Orbitron';
+            font-size: 28px;
+            color: var(--neon-y);
+            margin-bottom: 30px;
+        }
+        
+        .settings-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .section {
+            background: var(--card);
+            padding: 30px;
+            border-radius: 25px;
+            border: 2px solid #222;
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-family: 'Orbitron';
+            font-size: 16px;
+            color: var(--neon-y);
+            margin-bottom: 20px;
+            border-bottom: 2px solid #222;
+            padding-bottom: 10px;
+        }
+        
+        .profile-pic-section {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .pfp-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px solid var(--neon-y);
+            object-fit: cover;
+            margin-bottom: 15px;
+        }
+        
+        .upload-btn {
+            background: var(--neon-y);
+            color: #000;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Orbitron';
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #333;
+        }
+        
+        .info-row:last-child {
+            border: none;
+        }
+        
+        .info-label {
+            color: #848e9c;
+            font-size: 14px;
+        }
+        
+        .info-value {
+            font-weight: bold;
+            font-family: 'Orbitron';
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            font-family: 'Orbitron';
+            font-size: 12px;
+            color: var(--neon-y);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        
+        input {
+            width: 100%;
+            padding: 15px;
+            background: #000;
+            border: 2px solid #333;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            transition: 0.3s;
+        }
+        
+        input:focus {
+            border-color: var(--neon-y);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--neon-y), #fff);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Orbitron';
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        .btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 20px rgba(234,255,0,0.4);
+        }
+        
+        .btn-danger {
+            background: var(--red);
+            color: #fff;
+            margin-top: 20px;
+        }
+        
+        .btn-danger:hover {
+            background: #ff6b6d;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: var(--card);
+            padding: 40px;
+            border-radius: 25px;
+            border: 2px solid var(--neon-y);
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 32px;
+            color: #666;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: #fff;
+        }
+        
+        .modal h2 {
+            font-family: 'Orbitron';
+            color: var(--neon-y);
+            margin-bottom: 10px;
+        }
+        
+        .modal p {
+            color: #848e9c;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+        
+        .code-input {
+            text-align: center;
+            font-size: 32px;
+            letter-spacing: 10px;
+            font-family: 'Orbitron';
+            padding: 20px;
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 20px 30px;
+            border-radius: 12px;
+            font-family: 'Orbitron';
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 10000;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .toast.success { background: var(--green); color: #000; }
+        .toast.error { background: var(--red); color: #fff; }
+        
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="dashboard.html" class="back-btn">← Back</a>
+    </div>
+    
+    <h1 class="title">⚙️ Settings</h1>
+    
+    <div class="settings-container">
+        <!-- Profile Section -->
+        <div class="section">
+            <div class="section-title">PROFILE</div>
+            <div class="profile-pic-section">
+                <img id="profilePic" class="pfp-large" src="https://ui-avatars.com/api/?name=User&background=eaff00&color=000">
+                <br>
+                <label for="pfpUpload" class="upload-btn">Change Photo</label>
+                <input type="file" id="pfpUpload" accept="image/*">
+            </div>
+            
+            <div class="info-row">
+                <span class="info-label">Name</span>
+                <span class="info-value" id="userName">---</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Email</span>
+                <span class="info-value" id="userEmail">---</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Country</span>
+                <span class="info-value" id="userCountry">---</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Member Since</span>
+                <span class="info-value" id="memberSince">Dec 2024</span>
+            </div>
+        </div>
+        
+        <!-- Security Section -->
+        <div class="section">
+            <div class="section-title">SECURITY</div>
+            
+            <div class="form-group">
+                <label>New Password</label>
+                <input type="password" id="newPassword" placeholder="Enter new password">
+            </div>
+            
+            <button class="btn" onclick="updatePassword()">Update Password</button>
+        </div>
+        
+        <!-- Withdrawal PIN -->
+        <div class="section">
+            <div class="section-title">WITHDRAWAL PIN</div>
+            
+            <div class="form-group">
+                <label>Set 4-Digit PIN</label>
+                <input type="password" id="newPin" maxlength="4" placeholder="****">
+            </div>
+            
+            <button class="btn" onclick="updatePin()">Update PIN</button>
+        </div>
+        
+        <!-- Danger Zone -->
+        <div class="section">
+            <div class="section-title" style="color:var(--red);">DANGER ZONE</div>
+            <button class="btn btn-danger" onclick="logout()">🚪 Logout</button>
+        </div>
+    </div>
+    
+    <!-- Verification Modal -->
+    <div class="modal" id="verifyModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Email Verification</h2>
+            <p>Enter the 6-digit code sent to your email</p>
+            <input type="text" id="verifyCode" class="code-input" maxlength="6" placeholder="000000">
+            <button class="btn" onclick="verifyCode()">Verify</button>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize EmailJS
+        (function() {
+            emailjs.init("FYboHXGDhZynIdpOH");
+        })();
+        
+        let generatedCode = '';
+        let pendingAction = null;
+        let currentUser = null;
+        
+        window.onload = function() {
+            currentUser = JSON.parse(localStorage.getItem('fidelity_current_user'));
+            
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            document.getElementById('userName').textContent = currentUser.fname + ' ' + currentUser.lname;
+            document.getElementById('userEmail').textContent = currentUser.email;
+            document.getElementById('userCountry').textContent = currentUser.country;
+            
+            const savedPfp = currentUser.profilePic;
+            if (savedPfp) {
+                document.getElementById('profilePic').src = savedPfp;
+            }
+        }
+        
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease-out reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+        
+        // Profile Picture Upload
+        document.getElementById('pfpUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                document.getElementById('profilePic').src = event.target.result;
+                currentUser.profilePic = event.target.result;
+                
+                const users = JSON.parse(localStorage.getItem('fidelity_users') || '[]');
+                const userIndex = users.findIndex(u => u.id === currentUser.id);
+                if (userIndex !== -1) {
+                    users[userIndex] = currentUser;
+                    localStorage.setItem('fidelity_users', JSON.stringify(users));
+                    localStorage.setItem('fidelity_current_user', JSON.stringify(currentUser));
+                }
+                
+                showToast('Profile picture updated!', 'success');
+            };
+            reader.readAsDataURL(file);
+        });
+        
+        async function sendVerificationCode(action) {
+            generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
+            pendingAction = action;
+            
+            try {
+                await emailjs.send('service_x2vpc4n', 'template_kn7b6lo', {
+                    to_email: currentUser.email,
+                    to_name: currentUser.fname,
+                    verification_code: generatedCode,
+                    from_name: 'Fidelity FX Security'
+                });
+                
+                showToast('Verification code sent!', 'success');
+                document.getElementById('verifyModal').style.display = 'flex';
+            } catch (error) {
+                showToast('Failed to send code', 'error');
+            }
+        }
+        
+        function verifyCode() {
+            const enteredCode = document.getElementById('verifyCode').value.trim();
+            
+            if (enteredCode === generatedCode) {
+                closeModal();
+                executePendingAction();
+            } else {
+                showToast('Invalid code', 'error');
+            }
+        }
+        
+        function executePendingAction() {
+            if (pendingAction === 'password') {
+                const newPass = document.getElementById('newPassword').value;
+                currentUser.password = newPass;
+                saveUser();
+                showToast('Password updated successfully!', 'success');
+                document.getElementById('newPassword').value = '';
+            } else if (pendingAction === 'pin') {
+                const newPin = document.getElementById('newPin').value;
+                currentUser.withdrawPin = newPin;
+                saveUser();
+                showToast('PIN updated successfully!', 'success');
+                document.getElementById('newPin').value = '';
+            }
+            
+            pendingAction = null;
+        }
+        
+        function saveUser() {
+            const users = JSON.parse(localStorage.getItem('fidelity_users') || '[]');
+            const userIndex = users.findIndex(u => u.id === currentUser.id);
+            if (userIndex !== -1) {
+                users[userIndex] = currentUser;
+                localStorage.setItem('fidelity_users', JSON.stringify(users));
+                localStorage.setItem('fidelity_current_user', JSON.stringify(currentUser));
+            }
+        }
+        
+        function updatePassword() {
+            const newPass = document.getElementById('newPassword').value;
+            
+            if (!newPass || newPass.length < 6) {
+                showToast('Password must be at least 6 characters', 'error');
+                return;
+            }
+            
+            sendVerificationCode('password');
+        }
+        
+        function updatePin() {
+            const newPin = document.getElementById('newPin').value;
+            
+            if (!newPin || newPin.length !== 4 || !/^\d{4}$/.test(newPin)) {
+                showToast('PIN must be 4 digits', 'error');
+                return;
+            }
+            
+            sendVerificationCode('pin');
+        }
+        
+        function closeModal() {
+            document.getElementById('verifyModal').style.display = 'none';
+            document.getElementById('verifyCode').value = '';
+        }
+        
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('fidelity_current_user');
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+</html>

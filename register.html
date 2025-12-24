@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | Fidelity FX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --neon-y: #eaff00;
+            --green: #00ff88;
+            --red: #ff4e50;
+            --bg: #030508;
+            --card: #0d1117;
+        }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--bg);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 50%, rgba(234,255,0,0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 80%, rgba(0,255,136,0.15) 0%, transparent 50%);
+            z-index: -1;
+            animation: pulse 6s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        
+        .container {
+            background: var(--card);
+            padding: 50px;
+            border-radius: 30px;
+            border: 2px solid rgba(234,255,0,0.3);
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        
+        .logo {
+            text-align: center;
+            font-family: 'Orbitron';
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--neon-y);
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px var(--neon-y);
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #848e9c;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            font-family: 'Orbitron';
+            font-size: 12px;
+            color: var(--neon-y);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 18px;
+            background: #000;
+            border: 2px solid #333;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 16px;
+            font-family: 'Rajdhani';
+            outline: none;
+            transition: 0.3s;
+        }
+        
+        input:focus, select:focus {
+            border-color: var(--neon-y);
+            box-shadow: 0 0 20px rgba(234,255,0,0.2);
+        }
+        
+        .pass-box {
+            position: relative;
+        }
+        
+        .toggle-eye {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            cursor: pointer;
+            color: #848e9c;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--neon-y), #fff);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Orbitron';
+            font-weight: bold;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 25px rgba(234,255,0,0.4);
+        }
+        
+        .link-text {
+            text-align: center;
+            margin-top: 25px;
+            color: #848e9c;
+            font-size: 15px;
+        }
+        
+        .link-text a {
+            color: var(--neon-y);
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .link-text a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 20px 30px;
+            border-radius: 12px;
+            font-family: 'Orbitron';
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 10000;
+            animation: slideIn 0.3s ease-out;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+        
+        .toast.success {
+            background: var(--green);
+            color: #000;
+        }
+        
+        .toast.error {
+            background: var(--red);
+            color: #fff;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        /* Welcome Bonus Modal */
+        .bonus-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .bonus-content {
+            background: linear-gradient(135deg, #1a1f2e, #0d1117);
+            padding: 50px;
+            border-radius: 30px;
+            border: 3px solid var(--neon-y);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(234,255,0,0.3);
+            animation: bounceIn 0.6s ease-out;
+        }
+        
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .bonus-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: rotate 2s ease-in-out infinite;
+        }
+        
+        @keyframes rotate {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(15deg) scale(1.1); }
+        }
+        
+        .bonus-amount {
+            font-family: 'Orbitron';
+            font-size: 56px;
+            font-weight: 900;
+            color: var(--neon-y);
+            margin: 20px 0;
+            text-shadow: 0 0 30px var(--neon-y);
+        }
+        
+        .bonus-text {
+            font-size: 20px;
+            color: #848e9c;
+            margin-bottom: 30px;
+        }
+        
+        .bonus-btn {
+            background: linear-gradient(135deg, var(--neon-y), #fff);
+            color: #000;
+            padding: 18px 40px;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Orbitron';
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            .container { padding: 30px 20px; }
+            .logo { font-size: 28px; }
+            .bonus-content { padding: 30px 20px; }
+            .bonus-amount { font-size: 42px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">FIDELITY FX</div>
+        <div class="subtitle">Create your investment account</div>
+        
+        <form id="registerForm">
+            <div class="form-group">
+                <label>First Name *</label>
+                <input type="text" id="fname" placeholder="John" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Last Name *</label>
+                <input type="text" id="lname" placeholder="Doe" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Email Address *</label>
+                <input type="email" id="email" placeholder="john@example.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Country *</label>
+                <select id="country" required>
+                    <option value="">Select Country</option>
+                    <option value="Nigeria">Nigeria</option>
+                    <option value="USA">United States</option>
+                    <option value="UK">United Kingdom</option>
+                    <option value="Canada">Canada</option>
+                    <option value="Germany">Germany</option>
+                    <option value="Australia">Australia</option>
+                    <option value="South Africa">South Africa</option>
+                    <option value="Ghana">Ghana</option>
+                    <option value="Kenya">Kenya</option>
+                    <option value="India">India</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Referral Code (Optional)</label>
+                <input type="text" id="referral" placeholder="Enter referral code">
+            </div>
+            
+            <div class="form-group">
+                <label>Password *</label>
+                <div class="pass-box">
+                    <input type="password" id="password" placeholder="Min. 6 characters" required>
+                    <span class="toggle-eye" onclick="togglePassword('password')">👁️</span>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Confirm Password *</label>
+                <div class="pass-box">
+                    <input type="password" id="confirmPass" placeholder="Re-enter password" required>
+                    <span class="toggle-eye" onclick="togglePassword('confirmPass')">👁️</span>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn">Create Account</button>
+        </form>
+        
+        <div class="link-text">
+            Already have an account? <a href="login.html">Login here</a>
+        </div>
+    </div>
+    
+    <!-- Welcome Bonus Modal -->
+    <div class="bonus-modal" id="bonusModal">
+        <div class="bonus-content">
+            <div class="bonus-icon">🎁</div>
+            <h2 style="font-family:'Orbitron'; color:var(--neon-y); margin-bottom:15px;">Congratulations!</h2>
+            <p style="color:#848e9c; margin-bottom:20px;">Welcome to Fidelity FX! You've received a signup bonus:</p>
+            <div class="bonus-amount">$18.00</div>
+            <p class="bonus-text">Your welcome bonus has been added to your account!</p>
+            <button class="bonus-btn" onclick="goToDashboard()">🚀 Start Trading Now</button>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize EmailJS with YOUR credentials
+        (function() {
+            emailjs.init("FYboHXGDhZynIdpOH");
+        })();
+        
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease-out reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+        
+        function togglePassword(id) {
+            const input = document.getElementById(id);
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+        
+        function generateUserId() {
+            return 'USER_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        }
+        
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const fname = document.getElementById('fname').value.trim();
+            const lname = document.getElementById('lname').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const country = document.getElementById('country').value;
+            const password = document.getElementById('password').value;
+            const confirmPass = document.getElementById('confirmPass').value;
+            const referral = document.getElementById('referral').value.trim();
+            
+            // Validation
+            if (password.length < 6) {
+                showToast('Password must be at least 6 characters', 'error');
+                return;
+            }
+            
+            if (password !== confirmPass) {
+                showToast('Passwords do not match', 'error');
+                return;
+            }
+            
+            // Check if email already exists
+            const existingUsers = JSON.parse(localStorage.getItem('fidelity_users') || '[]');
+            if (existingUsers.find(u => u.email === email)) {
+                showToast('Email already registered', 'error');
+                return;
+            }
+            
+            // Create user object
+            const userId = generateUserId();
+            const userData = {
+                id: userId,
+                fname,
+                lname,
+                email,
+                country,
+                password,
+                referral,
+                balance: 18.00, // Welcome bonus
+                profit: 0,
+                status: 'unverified',
+                registeredDate: new Date().toISOString(),
+                history: [{
+                    type: 'SIGNUP BONUS',
+                    amount: '18.00',
+                    date: new Date().toLocaleDateString(),
+                    status: 'Success'
+                }]
+            };
+            
+            // Save user
+            existingUsers.push(userData);
+            localStorage.setItem('fidelity_users', JSON.stringify(existingUsers));
+            
+            // Save current user session
+            localStorage.setItem('fidelity_current_user', JSON.stringify(userData));
+            
+            // Send welcome email (optional - won't block registration)
+            try {
+                await emailjs.send('service_x2vpc4n', 'template_kn7b6lo', {
+                    to_email: email,
+                    to_name: fname,
+                    verification_code: 'Welcome to Fidelity FX!',
+                    from_name: 'Fidelity FX Team'
+                });
+            } catch (error) {
+                console.log('Email notification failed, but registration successful');
+            }
+            
+            showToast('Account created successfully!', 'success');
+            
+            // Show welcome bonus modal
+            document.getElementById('bonusModal').style.display = 'flex';
+        });
+        
+        function goToDashboard() {
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+</html>
